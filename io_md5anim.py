@@ -1,12 +1,12 @@
 from itertools import chain
 from .shared import * # for brevity use star import, also imports modules
 
-def create_fcurves(action, data_path, dim, group=""):
-	return tuple(action.fcurves.new(data_path, i, group) for i in range(dim))
+def create_fcurves(action, data_path, dim, group):
+	return tuple(action.fcurves.new(data_path, index=i, action_group=group) for i in range(dim))
 
 def insert_keyframe(fcurves, time, values, interpolation="LINEAR"):
 	for fcu, val in zip(fcurves, values):
-		kf = fcu.keyframe_points.insert(time, val, {'FAST'})
+		kf = fcu.keyframe_points.insert(time, val, options={'FAST'})
 		kf.interpolation = interpolation
 
 def mat_offset(pose_bone):
@@ -69,10 +69,10 @@ class JointInfo:
 				j += 1
 
 		rot = restore_quat(*rot)
-		mat_basis = (Matrix.Translation(loc) *
+		mat_basis = (Matrix.Translation(loc) @
 					 rot.to_matrix().to_4x4())
 
-		mat_basis = mat_offset(self.pose_bone).inverted() * mat_basis
+		mat_basis = mat_offset(self.pose_bone).inverted() @ mat_basis
 		loc, rot, scale = mat_basis.decompose()
 
 		insert_keyframe(self.fcu_loc, frame, loc)
