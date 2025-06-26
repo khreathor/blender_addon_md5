@@ -32,8 +32,8 @@ class Vert:
 		return weights[self.fwi: self.fwi + self.nof_weights]
 
 	def calc_position(self, weights, matrices):
-		return sum((matrices[weight.joint_index][1] * weight.offset * weight.value
-					for weight in self.get_weights(weights)), Vector())
+		return sum((matrices[weight.joint_index][1] @ weight.offset * weight.value
+			for weight in self.get_weights(weights)), Vector())
 
 	def serialize(self, stream):
 		self.uv.y = 1.0 - self.uv.y
@@ -282,8 +282,8 @@ def read_md5mesh(filepath):
 		bm.to_mesh(mesh)
 		bm.free()
 
-		mesh.auto_smooth_angle = math.radians(45)
-		mesh.use_auto_smooth = True
+		#mesh.auto_smooth_angle = math.radians(45)
+		#mesh.use_auto_smooth = True
 
 		mesh_obj = bpy.data.objects.new(label, mesh)
 		for joint_name, mat in matrices:
@@ -294,7 +294,7 @@ def read_md5mesh(filepath):
 		arm_mod.object = arm_obj
 		arm_mod.use_deform_preserve_volume = True
 
-		bpy.context.scene.objects.link(mesh_obj)
+		bpy.context.collection.objects.link(mesh_obj)
 
 		mat_name = label
 		mat = (bpy.data.materials.get(mat_name) or
@@ -308,9 +308,9 @@ def do_joints(lines, re_joint, re_end):
 
 	arm = bpy.data.armatures.new("MD5")
 	arm_obj = bpy.data.objects.new("MD5", arm)
-	arm_obj.select = True
-	bpy.context.scene.objects.link(arm_obj)
-	bpy.context.scene.objects.active = arm_obj
+	bpy.context.collection.objects.link(arm_obj)
+	arm_obj.select_set(True)
+	bpy.context.view_layer.objects.active = arm_obj
 
 	matrices = []
 	name_to_index = {}
@@ -332,12 +332,12 @@ def do_joints(lines, re_joint, re_end):
 			eb.parent = edit_bones[parent]
 
 		quat = restore_quat(*quat)
-		mat = Matrix.Translation(loc) * quat.to_matrix().to_4x4()
+		mat = Matrix.Translation(loc) @ quat.to_matrix().to_4x4()
 		matrices.append((name, mat))
 
 		eb.head = loc
-		eb.tail = loc + quat * VEC_Y
-		eb.align_roll(quat * VEC_Z)
+		eb.tail = loc + quat @ VEC_Y
+		eb.align_roll(quat @ VEC_Z)
 
 	for eb in arm.edit_bones:
 		if len(eb.children) == 1:
