@@ -105,8 +105,8 @@ class OT_EXPORT_ANIM_md5anim(bpy.types.Operator, ExportHelper):
 	bl_options = {"REGISTER", "UNDO"}
 
 	filename_ext = ".md5anim"
-	filter_glob = StringProperty(default="*.md5anim", options={'HIDDEN'})
-	bone_layer = IntProperty(name="BoneLayer", default=0)
+	filter_glob: StringProperty(default="*.md5anim", options={'HIDDEN'})
+	bone_layer: IntProperty(name="BoneLayer", default=0)
 
 	@classmethod
 	def poll(cls, context):
@@ -186,14 +186,13 @@ class OT_IMPORT_MESH_sb_hudgun(bpy.types.Operator, ImportHelper):
 		layout.prop(self, "res_x")
 		layout.prop(self, "res_y")
 		layout.prop(pref, "sb_dir")
-
+		
 reg_table = (
-	[OT_IMPORT_MESH_md5mesh,   bpy.types.INFO_MT_file_import, "MD5 Mesh (.md5mesh)"	   ],
-	[OT_IMPORT_ANIM_md5anim,   bpy.types.INFO_MT_file_import, "MD5 Animation (.md5anim)"],
-	[OT_EXPORT_MESH_md5mesh,   bpy.types.INFO_MT_file_export, "MD5 Mesh (.md5mesh)"     ],
-	[OT_EXPORT_ANIM_md5anim,   bpy.types.INFO_MT_file_export, "MD5 Animation (.md5anim)"],
-	[OT_IMPORT_MESH_sb_hudgun, bpy.types.INFO_MT_file_import, "Sauerbraten Hudgun (.cfg)"]
-)
+	[OT_IMPORT_MESH_md5mesh,   bpy.types.TOPBAR_MT_file_import, "MD5 Mesh (.md5mesh)"	   ],
+	[OT_IMPORT_ANIM_md5anim,   bpy.types.TOPBAR_MT_file_import, "MD5 Animation (.md5anim)"],
+	[OT_EXPORT_MESH_md5mesh,   bpy.types.TOPBAR_MT_file_export, "MD5 Mesh (.md5mesh)"     ],
+	[OT_EXPORT_ANIM_md5anim,   bpy.types.TOPBAR_MT_file_export, "MD5 Animation (.md5anim)"],
+	[OT_IMPORT_MESH_sb_hudgun, bpy.types.TOPBAR_MT_file_import, "Sauerbraten Hudgun (.cfg)"])
 
 def generate_menu_function(op_cls, description):
 	def mnu_func(self, context):
