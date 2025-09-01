@@ -253,7 +253,7 @@ def write_md5anim(filepath, scene, arm_obj, bone_layer, skip_bbox=False):
 	frame_start, frame_end = tuple(map(int, action.frame_range))
 	frame_count = frame_end - frame_start + 1
 
-	pose_bones = [pb for pb in arm_obj.pose.bones if pb.bone.layers[bone_layer]]
+	pose_bones = [pb for pb in arm_obj.pose.bones if arm_obj.data.collections[0].bones[pb.bone.name]]
 	nof_joints = len(pose_bones)
 	name_to_index = get_name_to_index_dict(arm_obj)
 	joint_infos = [JointInfo() for i in range(nof_joints)]
