@@ -126,7 +126,7 @@ class Mesh:
 		bmesh.ops.split_edges(bm, edges=seams, verts=tag_verts, use_verts=True)
 
 		# triangulate
-		bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method=0, ngon_method=0)
+		bmesh.ops.triangulate(bm, faces=bm.faces[:], quad_method='BEAUTY', ngon_method='BEAUTY')
 
 		# flip normals
 		bmesh.ops.reverse_faces(bm, faces=bm.faces[:], flip_multires=False)
@@ -167,7 +167,7 @@ class Mesh:
 			co = (1 / sum(weight.value for weight in weights)) * bmv.co
 
 			for weight in weights:
-				weight.offset = joints[weight.joint_index].mat_inv * co
+				weight.offset = joints[weight.joint_index].mat_inv @ co
 
 		for face in self.bm.faces:
 			for loop in face.loops:
@@ -406,21 +406,20 @@ def do_mesh(lines, reg_exprs, matrices):
 # Write md5mesh
 #-------------------------------------------------------------------------------
 
-def on_active_layer(scene, obj):
-	layers_scene = scene.layers
-	layers_obj   = obj.layers
-
-	for i in range(20):
-		if layers_scene[i] and layers_obj[i]:
-			return True
-	return False
+#def on_active_layer(scene, obj):
+#	view_layer = bpy.context.view_layer
+#	for collection in obj.users_collection:
+#		layer_collection = view_layer.layer_collection.find(collection.name)
+#		if layer_collection and not layer_collection.exclude:
+#			return True
+#	return False
 
 def write_md5mesh(filepath, scene, arm_obj):
 	meshes = []
 
 	for mesh_obj in filter(is_mesh_object, scene.objects):
-		if (on_active_layer(scene, mesh_obj) and
-			has_armature_modifier(mesh_obj, arm_obj)):
+		#if (on_active_layer(scene, mesh_obj) and
+		if has_armature_modifier(mesh_obj, arm_obj):
 			meshes.append(Mesh(mesh_obj))
 
 	bones = arm_obj.data.bones
