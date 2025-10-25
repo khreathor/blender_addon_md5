@@ -130,7 +130,7 @@ def read_md5anim(filepath):
 	data_path_rot = 'pose.bones["{:s}"].rotation_quaternion'
 
 	t_Int	= r"(-?\d+)"
-	t_Float = r"(-?\d+\.\d+)"
+	t_Float = r"(-?\d+(?:\.\d+)?)"
 	t_Word	= r"(\S+)"
 	t_QuotedString = '"([^"]*)"' # does not allow escaping \"
 	t_Tuple2f = "\\s+".join(("\\(", t_Float, t_Float, "\\)"))
