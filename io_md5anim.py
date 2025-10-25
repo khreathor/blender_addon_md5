@@ -94,7 +94,7 @@ class JointInfo:
 		fmt_row3f = "( {:.6f} {:.6f} {:.6f} )"
 		fmt = "\t{loc:s} {rot:s}\n"
 
-		mat = self.mat_offset * self.pose_bone.matrix_basis
+		mat = self.mat_offset @ self.pose_bone.matrix_basis
 		loc, rot, scale = mat.decompose()
 		rot *= -1.0
 
@@ -105,7 +105,7 @@ class JointInfo:
 
 	def write_frame_data(self, stream):
 		fmt = "\t{:.6f} {:.6f} {:.6f} {:.6f} {:.6f} {:.6f}\n"
-		mat = self.mat_offset * self.pose_bone.matrix_basis
+		mat = self.mat_offset @ self.pose_bone.matrix_basis
 		loc, rot, scale = mat.decompose()
 		rot *= -1.0
 		arg = tuple(loc) + tuple(rot[1:])
